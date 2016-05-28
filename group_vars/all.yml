@@ -1,0 +1,8 @@
+---
+
+# Your timezone
+timezone: 'Europe/Amsterdam'
+# Your username
+user: koala
+# Set the hostname
+hostname: forest

@@ -1,0 +1,8 @@
+---
+
+- name: download wp-cli
+  sudo: yes
+  get_url: url=https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar dest=/usr/local/bin/wp
+
+- name: update permissions of wp-cli to allow anyone to execute it
+  file: path=/usr/local/bin/wp mode="0755"

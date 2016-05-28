@@ -1,0 +1,5 @@
+---
+
+user_directory_apps: "/home/{{ user }}/apps"
+user_directory_app_config: "/home/{{ user }}/config/"
+hostname: name={{hostname}}

@@ -1,0 +1,56 @@
+---
+
+- name: Add nginx ppa
+  apt_repository: >
+    repo=ppa:nginx/stable
+    update_cache=yes
+
+- name: Install nginx
+  apt: >
+    pkg=nginx
+    state=present
+  notify: Restart nginx
+
+- name: Write fastcgi_params
+  template: >
+    src=fastcgi_params.j2
+    dest=/etc/nginx/fastcgi_params
+    owner=root
+    group=root
+    mode=0644
+  notify: Restart nginx
+
+- name: Write Nginx configuration
+  template: >
+    src=nginx.conf
+    dest=/etc/nginx/nginx.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: Restart nginx
+
+- name: Copy default landingspage
+  template: >
+    src=index.html
+    dest=/var/www/html/index.html
+    owner=root
+    group=root
+    mode=0644
+  notify: Restart nginx
+
+- name: Copy robots.txt
+  template: >
+    src=robots.txt
+    dest=/var/www/html/robots.txt
+    owner=root
+    group=root
+    mode=0644
+  notify: Restart nginx
+
+- name: Create nginx config directory for user
+  file: >
+    path={{ user_directory_nginx_sites }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0755

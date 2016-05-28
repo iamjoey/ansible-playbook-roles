@@ -1,0 +1,21 @@
+---
+
+- name: Generate password
+  shell: >
+    mkpasswd --method=SHA-512 "{{ lookup('password', '~/.ansible/provision/' + hostname + '/' + user + '-password chars=ascii_letters') }}"
+  register: password
+
+- name: Add user
+  user: >
+    name={{ user }}
+    comment="I am {{ user }}"
+    state=present
+    shell=/bin/bash
+    password="{{ password.stdout }}"
+  become: yes
+
+- name: Add sudo permissions
+  template: >
+    src=sudoers.j2
+    dest=/etc/sudoers.d/{{ user }}
+    validate="/usr/sbin/visudo -cf %s"
