@@ -20,4 +20,28 @@
     regexp=';cgi.fix_pathinfo=1'
     replace='cgi.fix_pathinfo=0'
 
+- name: Change pool user
+  replace: >
+    dest=/etc/php5/fpm/pool.d/www.conf
+    regexp='user = www-data'
+    replace='user = {{user}}'
+
+- name: Change max file upload size
+  replace: >
+    dest=/etc/php5/fpm/php.ini
+    regexp='upload_max_filesize = 2M'
+    replace='upload_max_filesize = {{php_upload_max_filesize}}'
+
+- name: Change max file post size
+  replace: >
+    dest=/etc/php5/fpm/php.ini
+    regexp='post_max_size = 8M'
+    replace='post_max_size = {{php_post_max_size}}'
+
+- name: Change memory limit
+  replace: >
+    dest=/etc/php5/fpm/php.ini
+    regexp='memory_limit = 128M'
+    replace='memory_limit = {{php_memory_limit}}'
+
 - include: modules.yml

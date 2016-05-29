@@ -1,4 +1,3 @@
 ---
 
 user_directory_nginx_sites: "/home/{{ user }}/config/nginx-config"
-background_color: "#27ae60"
