@@ -7,7 +7,7 @@
   vars:
         # Ruby
       - workspace: /home/koala
-      - ruby_install_gems_user: koala
+      - ruby_install_gems_user: "{{ user }}"
       - ruby_install_from_source: true
       - ruby_version: 2.3.0
         # MariaDB
@@ -36,3 +36,4 @@
       - { role: geerlingguy.ruby }
       - jekyll
       - { role: craigmj.mariadb10 }
+      - wkhtmlto

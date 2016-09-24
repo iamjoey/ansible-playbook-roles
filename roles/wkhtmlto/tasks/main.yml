@@ -1,0 +1,13 @@
+---
+- get_url:
+    url: '{{wkhtmlto_download_url}}'
+    dest: /root/wkhtmlto-{{wkhtmlto_minor_version}}.deb
+  name: 'wkhtmlto | download {{wkhtmlto_download_url}}'
+- apt:
+    deb: /root/wkhtmlto-{{wkhtmlto_minor_version}}.deb
+  name: 'wkhtmlto | Install deb'
+- apt: pkg=xvfb
+  name: 'Install Xvfb'
+- include: 'font.yml'
+  when: '{{wkhtmlto_install_fonts}}'
+

@@ -8,8 +8,3 @@ user: koala
 hostname: forest
 # Whats your favorite color?
 background_color: "#27ae60"
-
-# Settings for your php.ini
-php_upload_max_filesize: "2M"
-php_post_max_size: "8M"
-php_memory_limit: "2222M"
