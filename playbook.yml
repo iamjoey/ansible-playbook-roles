@@ -5,27 +5,34 @@
   become_method: sudo
   strategy: free
   vars:
+        # Ruby
       - workspace: /home/koala
       - ruby_install_gems_user: koala
       - ruby_install_from_source: true
       - ruby_version: 2.3.0
+        # MariaDB
       - mysql_root_db_pass: "{{ lookup('password', '~/.ansible/provision/' + hostname + '/db-password chars=ascii_letters') }}"
       - mariadb_repo_url: "[arch=amd64,i386] http://mirror.i3d.net/pub/mariadb/repo/10.0/ubuntu"
+        # PHP7
+      - php_timezone: "{{ timezone }}"
+      - php_upload_max_filesize: "20M"
+      - php_post_max_size: "20M"
+      - php_memory_limit: "1024M"
 
   roles:
-    - initialize
-    - franklinkim.timezone
-    - f500.ntp
-    - f500.locale
-    - users
-    - defaults
-    # Optional to install
-    - git
-    - nginx
-    - php
-    - nodesource.node
-    - wp-cli
-    - composer
-    - { role: geerlingguy.ruby }
-    - jekyll
-    - { role: craigmj.mariadb10 }
+      - initialize
+      - franklinkim.timezone
+      - f500.ntp
+      - f500.locale
+      - users
+      - defaults
+        # Optional to install
+      - git
+      - nginx
+      - nodesource.node
+      - { role: chusiang.php7 }
+      - wp-cli
+      - composer
+      - { role: geerlingguy.ruby }
+      - jekyll
+      - { role: craigmj.mariadb10 }
