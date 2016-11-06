@@ -18,6 +18,10 @@
       - php_upload_max_filesize: "20M"
       - php_post_max_size: "20M"
       - php_memory_limit: "1024M"
+      - apt_php_packages:
+        - php7.0-mbstring
+        - php7.0-mcrypt
+        - php7.0-dom
 
   roles:
       - initialize
@@ -30,10 +34,11 @@
       - git
       - nginx
       - nodesource.node
-      - { role: chusiang.php7 }
+      - { role: itcraftsmanpl.php7 }
       - wp-cli
       - composer
       - { role: geerlingguy.ruby }
       - jekyll
       - { role: craigmj.mariadb10 }
       - wkhtmlto
+      - sendmail
