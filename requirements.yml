@@ -2,3 +2,8 @@
 - src: f500.locale
 - src: craigmj.mariadb10
 - src: franklinkim.timezone
+- src: geerlingguy.nodejs
+- src: itcraftsmanpl.php7
+- src: geerlingguy.ruby
+- src: craigmj.mariadb10
+- src: kamaln7.swapfile

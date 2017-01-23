@@ -5,23 +5,44 @@
   become_method: sudo
   strategy: free
   vars:
-        # Ruby
-      - workspace: /home/koala
-      - ruby_install_gems_user: "{{ user }}"
-      - ruby_install_from_source: true
-      - ruby_version: 2.3.0
-        # MariaDB
-      - mysql_root_db_pass: "{{ lookup('password', '~/.ansible/provision/' + hostname + '/db-password chars=ascii_letters') }}"
-      - mariadb_repo_url: "[arch=amd64,i386] http://mirror.i3d.net/pub/mariadb/repo/10.0/ubuntu"
-        # PHP7
-      - php_timezone: "{{ timezone }}"
-      - php_upload_max_filesize: "20M"
-      - php_post_max_size: "20M"
-      - php_memory_limit: "1024M"
-      - apt_php_packages:
+      # Your timezone
+    - timezone: 'Europe/Amsterdam'
+      # Your username
+    - user: app
+      # Set the hostname
+    - hostname: amsterdam
+      # Whats your favorite color?
+    - background_color: "#27ae60"
+      # Ruby
+    - workspace: "/home/{{user}}"
+    - ruby_install_gems_user: "{{ user }}"
+    - ruby_install_from_source: true
+    - ruby_version: 2.3.0
+      # MariaDB
+    - mysql_root_db_pass: "{{ lookup('password', '~/.ansible/provision/' + hostname + '/db-password chars=ascii_letters') }}"
+    - mariadb_repo_url: "[arch=amd64,i386] http://mirror.i3d.net/pub/mariadb/repo/10.0/ubuntu"
+      # PHP7
+    - php_ppa: "ppa:ondrej/php"
+    - php_timezone: "{{ timezone }}"
+    - php_upload_max_filesize: "20M"
+    - php_post_max_size: "20M"
+    - php_memory_limit: "1024M"
+    - php_packages:
+        - php7.0-common
+        - php7.0-cli
+        - php7.0-intl
+        - php7.0-curl
+        - php7.0-cgi
+        - php7.0-fpm
+        - php7.0-mysql
+        - php7.0-gd
         - php7.0-mbstring
         - php7.0-mcrypt
         - php7.0-dom
+        - php7.0-bcmath
+    # Swapfile
+    - swapfile_location: /swapfile
+    - swapfile_size: 512MB
 
   roles:
       - initialize
@@ -30,15 +51,16 @@
       - f500.locale
       - users
       - defaults
-        # Optional to install
+      # Optional to install
       - git
       - nginx
-      - nodesource.node
-      - { role: itcraftsmanpl.php7 }
+      - kamaln7.swapfile
+      - geerlingguy.nodejs
+      - itcraftsmanpl.php7
       - wp-cli
       - composer
-      - { role: geerlingguy.ruby }
+      - geerlingguy.ruby
       - jekyll
-      - { role: craigmj.mariadb10 }
+      - craigmj.mariadb10
       - wkhtmlto
       - sendmail
