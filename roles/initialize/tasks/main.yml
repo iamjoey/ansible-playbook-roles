@@ -20,3 +20,9 @@
   locale_gen: >
     name=en_US.UTF-8
     state=present
+
+- name: Ensure ntp starts on a fresh reboot
+  service:
+    name: ntp
+    state: started
+    enabled: yes

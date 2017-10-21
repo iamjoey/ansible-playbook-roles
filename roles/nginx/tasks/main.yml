@@ -38,6 +38,22 @@
     mode=0644
   notify: Restart nginx
 
+- name: Copy new site command
+  template: >
+    src=new-site
+    dest=/usr/local/bin/
+    owner=root
+    group=root
+    mode=0755
+
+- name: Copy new site command
+  template: >
+    src=new-site
+    dest=/usr/bin/
+    owner=root
+    group=root
+    mode=0755
+
 - name: Copy robots.txt
   template: >
     src=robots.txt

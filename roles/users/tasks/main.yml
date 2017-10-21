@@ -19,3 +19,19 @@
     src=sudoers.j2
     dest=/etc/sudoers.d/{{ user }}
     validate="/usr/sbin/visudo -cf %s"
+
+- name: Create app directory for the user
+  file: >
+    path={{ user_directory_apps }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0755
+
+- name: Create app config directory for the user
+  file: >
+    path={{ user_directory_app_config }}
+    state=directory
+    owner={{ user }}
+    group={{ user }}
+    mode=0755

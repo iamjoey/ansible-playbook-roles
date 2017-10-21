@@ -1,0 +1,133 @@
+# check for curl
+curl --version > /dev/null 2>&1
+CURL_IS_INSTALLED=$?
+
+if [[ $CURL_IS_INSTALLED -ne 0 ]] ; then
+	echo "Err: cURL is not installed."
+	exit 1
+fi
+
+# check for nginx
+nginx -v > /dev/null 2>&1
+NGINX_IS_INSTALLED=$?
+
+if [[ $NGINX_IS_INSTALLED -ne 0 ]] ; then
+	echo "Err: NGINX is not installed."
+	exit 1
+fi
+
+# ex: api.example.com (or) docs.example.com
+read -p "Enter the site name [ex: example.com (or) api.example.com]: " -e SITE
+
+if [[ -z $SITE ]] ; then
+	echo "Err: Site like \`example.com\` or \`api.example.com\` is required."
+	exit 1
+fi
+
+# absolute path to public folder. ex: /var/www/path/to/example-app/public
+read -p "Enter the absolute path to public folder [ex: /var/www/path/to/example-app/public]: " -e APP_PATH
+
+echo "Mapping $SITE -> $APP_PATH.."
+
+if [[ -z $APP_PATH ]] ; then
+	echo "Err: App path like \`/var/www/path/to/example-app/public\` is required."
+	exit 1
+fi
+
+# check if the folder path exists
+if [[ ! -d $APP_PATH ]] ; then
+	echo "Err: The specified path \`$APP_PATH\` does not exist."
+	exit 1
+fi
+
+sudo apt-get update > /dev/null
+
+# create nginx server block
+echo "Creating NGINX server block.."
+
+nginx_sites_available={{user_directory_nginx_sites}}
+nginx_logs=/var/log/nginx
+
+if [[ -e $nginx_sites_available/$SITE ]] ; then
+	echo "Site already exists. To re-config run \`sudo rm -f $nginx_sites_available/$SITE\` and try again."
+	exit 1
+fi
+
+# pull http server block
+curl -s -L https://gist.githubusercontent.com/iamjoey/a71f2d180394cb1167ec46f3e8ac4005/raw/e60286167721e17f24e56322410d6e2c6cb1b6a8/nginx-http-server-block.conf > $SITE.tmp
+
+sudo sed -i "s/server_name {SITE};/server_name $SITE;/" $SITE.tmp
+sudo sed -i "s|root {PATH};|root $APP_PATH;|" $SITE.tmp
+sudo sed -i "s|access_log $nginx_logs/{SITE}/access.log;|access_log $nginx_logs/$SITE/access.log;|" $SITE.tmp
+sudo sed -i "s|error_log $nginx_logs/{SITE}/error.log;|error_log $nginx_logs/$SITE/error.log;|" $SITE.tmp
+
+if [[ ! -d "/var/log/nginx/$SITE" ]] ; then
+	sudo mkdir /var/log/nginx/$SITE
+fi
+
+sudo mv $SITE.tmp $nginx_sites_available/$SITE
+
+sudo service nginx reload
+echo "NGINX server block successfully created!"
+
+# ask for SSL enabling
+read -p "Do you want to enable SSL for this site? (Y/n): " -n 1 -er SSL
+
+while [[ ! "$SSL" =~ ^y|Y|n|N$ ]]; do
+	read -p "Invalid entry, do you want to enable SSL? (Y/n): " -n 1 -er SSL
+done
+
+# SSL exit
+if [[ "$SSL" = "n" ]]; then
+	echo "Server block created and site ($SITE) is successfully installed!"
+	exit 0
+fi
+
+# ssl code..
+# check for letsencrypt
+echo "Checking Letsencrypt.."
+letsencrypt --version > /dev/null 2>&1
+LETSENCRYPT_IS_INSTALLED=$?
+
+if [[ $LETSENCRYPT_IS_INSTALLED -ne 0 ]] ; then
+	sudo apt-get install -qq letsencrypt
+	echo "Letsencrypt is successfully installed"
+else
+	echo "Letsencrypt is already installed."
+fi
+
+# prompt email id, to which ssl cert. expiration mail shoots out
+read -p "Enter your E-mail (used for SSL expiry reminders, etc) : " -e EMAIL
+
+while [[ -z "$EMAIL" ]]; do
+	read -p "Invalid E-mail, enter again: " -e EMAIL
+done
+
+# generate the certificate
+sudo letsencrypt certonly -n --agree-tos --webroot -w $APP_PATH -d $SITE -m $EMAIL
+
+# generate dhparam cert if not found
+if [[ ! -e /etc/ssl/certs/dhparam-2048.pem ]] ; then
+	sudo openssl dhparam -out /etc/ssl/certs/dhparam-2048.pem 2048
+	echo "SSL cipher successfully generated."
+fi
+
+echo "Creating NGINX HTTPS server block.."
+# pull https server block
+curl -s -L https://gist.githubusercontent.com/iamjoey/4f53f2e204505f7b9ecf4909ee090682/raw/dc755d14ec8ad3ec9fe1e8ed9255fb15869391de/nginx-https-server-block.conf > $SITE.tmp
+
+sudo sed -i "s|ssl_certificate /etc/letsencrypt/live/{SITE}/fullchain.pem;|ssl_certificate /etc/letsencrypt/live/$SITE/fullchain.pem;|" $SITE.tmp
+sudo sed -i "s|ssl_certificate_key /etc/letsencrypt/live/{SITE}/privkey.pem;|ssl_certificate_key /etc/letsencrypt/live/$SITE/privkey.pem;|" $SITE.tmp
+sudo sed -i "s/server_name {SITE};/server_name $SITE;/" $SITE.tmp
+sudo sed -i "s|root {PATH};|root $APP_PATH;|" $SITE.tmp
+sudo sed -i "s|access_log $nginx_logs/{SITE}/access.log;|access_log $nginx_logs/$SITE/access.log;|" $SITE.tmp
+sudo sed -i "s|error_log $nginx_logs/{SITE}/error.log;|error_log $nginx_logs/$SITE/error.log;|" $SITE.tmp
+
+# remove existing config
+sudo rm -f $nginx_sites_available/$SITE
+
+sudo mv $SITE.tmp $nginx_sites_available/$SITE
+
+sudo service nginx reload
+
+echo "Server block created and site ($SITE) is successfully installed over HTTPS!"

@@ -1,35 +1,69 @@
-<!DOCTYPE html>
-<html>
+
+<!doctype html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Hello, World</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+        <title>{{ hostname }}</title>
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+
+        <!-- Styles -->
         <style>
-            html,
-            body {
-                width: 100%;
-                height: 100%;
+            html, body {
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway', sans-serif;
+                font-weight: 100;
+                height: 100vh;
                 margin: 0;
             }
-
-            body {
-                display: table;
-                background-color: {{ background_color }};
+            .full-height {
+                height: 100vh;
             }
-
-            .container {
-                width: 100%;
-                display: table-cell;
-                vertical-align: middle;
+            .flex-center {
+                align-items: center;
+                display: flex;
+                justify-content: center;
+            }
+            .position-ref {
+                position: relative;
+            }
+            .top-right {
+                position: absolute;
+                right: 10px;
+                top: 18px;
+            }
+            .content {
                 text-align: center;
+            }
+            .title {
+                font-size: 84px;
+            }
+            .links > a {
+                color: #636b6f;
+                padding: 0 25px;
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+            .m-b-md {
+                margin-bottom: 30px;
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <img src="https://cdn.meme.am/instances/55822118.jpg" alt="I'm a Software Engineer, right?" />
+        <div class="flex-center position-ref full-height">
+            <div class="content">
+                <div class="title m-b-md">
+                    {{ hostname }}
+                </div>
+            </div>
         </div>
     </body>
 </html>

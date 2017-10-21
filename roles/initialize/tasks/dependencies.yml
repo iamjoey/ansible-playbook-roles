@@ -10,3 +10,7 @@
     - unzip
     - htop
     - software-properties-common
+    - ntp
+    - xvfb
+    - libfontconfig
+    - wkhtmltopdf

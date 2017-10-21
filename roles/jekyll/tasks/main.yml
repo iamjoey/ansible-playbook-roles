@@ -1,4 +1,0 @@
----
-
-- name: Install jekyll gem
-  command: gem install jekyll
